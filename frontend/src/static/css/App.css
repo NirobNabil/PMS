@@ -1,0 +1,13 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: banglaFont, roboto;
+}
+
+@font-face {
+  font-family: banglaFont;
+  src: url("Li Alinur Tatsama Unicode.ttf");
+  font-weight: 100;
+  unicode-range: U+980-9FF;
+}
