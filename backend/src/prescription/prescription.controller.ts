@@ -12,24 +12,6 @@ import { createConditionDto } from './dto/create-condition.dto';
 export class PrescriptionController {
   constructor(private prescriptionService: PrescriptionService) {}
 
-  @Post()
-  async create(@Body() createPrescriptionDto: CreatePrescriptionDto) {
-    const conditions = createPrescriptionDto.conditions.map( cond => {
-      if( cond.id == '' ) cond.id = null;  // TODO: there should be a better way for checking existence of condition 
-      return cond;
-    } )
-    const id = await this.prescriptionService.create({...createPrescriptionDto, conditions: conditions});
-    if( id == null ) {
-      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST)
-    }
-    return {id};
-  }
-
-  @Get()
-  async findAll(@Query() filter) : Promise<Prescription[]> {
-    return this.prescriptionService.findAll(filter);
-  }
-
   @Post('medicine')
   async createMedicine(@Body() createMedicineDto : CreateMedicineDto) {
     const id = this.prescriptionService.createMedicine({...createMedicineDto, id:null});
@@ -37,8 +19,13 @@ export class PrescriptionController {
   }
 
   @Get('medicine')
-  async findAllMedicines() : Promise<Medicine[]> {
-    return this.prescriptionService.findAllMedicine();
+  async findAllMedicines(@Query() filter : any) : Promise<Medicine[]> {
+    const new_filter = {};
+    for( const key in filter ) {
+      // assuming filter only contains string type values
+      if( filter[key] != "" ) new_filter[key] = filter[key];
+    }
+    return this.prescriptionService.findMedicines(new_filter);
   }
 
   @Get('medicine/:id')
@@ -55,6 +42,24 @@ export class PrescriptionController {
   @Post('condition')
   async createCondition(@Body() data : createConditionDto )  : Promise<Condition> {
     return this.prescriptionService.createCondition({...data, id:null});
+  }
+
+  @Post()
+  async create(@Body() createPrescriptionDto: CreatePrescriptionDto) {
+    const conditions = createPrescriptionDto.conditions.map( cond => {
+      if( cond.id == '' ) cond.id = null;  // TODO: there should be a better way for checking existence of condition 
+      return cond;
+    } )
+    const id = await this.prescriptionService.create({...createPrescriptionDto, conditions: conditions});
+    if( id == null ) {
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST)
+    }
+    return {id};
+  }
+
+  @Get()
+  async findAll(@Query() filter) : Promise<Prescription[]> {
+    return this.prescriptionService.findAll(filter);
   }
 
   @Get(':id')

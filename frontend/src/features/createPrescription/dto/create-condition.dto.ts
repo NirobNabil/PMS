@@ -1,3 +1,3 @@
-export class createCondition {
+export interface createConditionDto {
     name: string
 }

@@ -31,7 +31,9 @@ export default () => {
           </NavigationMenuItem>
 
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Medicines</NavigationMenuTrigger>
+            <Link to="/medicines">
+              <NavigationMenuTrigger>Medicines</NavigationMenuTrigger>
+            </Link>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>

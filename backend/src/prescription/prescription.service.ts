@@ -88,20 +88,19 @@ export class PrescriptionService {
         const medicines = await this.getPrescribedMedicines(p.id);
         const conditions = await this.getPrescribedConditions(p.id);
         const patient = await this.patientService.findOne(p.patient_id);
-        return {id: p.id, patient, medicines, conditions, note: p.note}
+        return {id: p.id, patient, medicines, conditions, note: p.note, created_at: p.created_at}
     }
 
     // TODO:
     // Ei function e apatoto shob prescription return kortese
     // filter parameter ta parse kore tomar oi onujayi filter kore output deya lagbe shimlachan
     async findAll(filter): Promise < Prescription[] > {
-        console.log(filter);
         const rows = (await db.query(`select * from prescription`)).rows;
         const prescriptions = await Promise.all( rows.map(async (p) : Promise < Prescription > => {
             const medicines = await this.getPrescribedMedicines(p.id);
             const patient = await this.patientService.findOne(p.patient_id);
             const conditions = await this.getPrescribedConditions(p.id);
-            return {id: p.id, patient, medicines, conditions, note: p.note}
+            return {id: p.id, patient, medicines, conditions, note: p.note, created_at: p.created_at}
         }));
         return prescriptions;
     }
@@ -121,6 +120,7 @@ export class PrescriptionService {
 
     async createMedicine(medicine : Medicine) : Promise<Medicine> {
         let id = uuidv4();
+        console.log(medicine);
         if( medicine.id != null ) id = medicine.id;
         await db.query(`insert into medicine values ($1, $2, $3, $4)`, [id, medicine.name, medicine.generic_name, medicine.producer]);
         return {...medicine, id: id};
@@ -131,8 +131,21 @@ export class PrescriptionService {
         return (await db.query(`select * from medicine where id = $1`, [id])).rows[0];
     }
 
-    async findAllMedicine() : Promise<Medicine[]> {
-        return (await db.query(`select * from medicine`)).rows;
+    // TODO: define interface for the filter
+    // This function should only receive filter object with attribtues that should be filtered
+    // for example this function should not contain the attribute "name" if name is not supposed to filtered on
+    async findMedicines(filter) : Promise<Medicine[]> {
+        let query = "select * from medicine ";
+        const keys = Object.keys(filter);
+        if( keys.length ) {
+            query += "where ";
+            query += 
+                keys.map( (key, i) => {
+                    return `LOWER(${key}) like LOWER('${filter[key]}%')`;
+                } )
+                .join( " and " );
+        }
+        return (await db.query(query)).rows;
     }
 
     async getPrescribedConditions(prescription_id : Prescription['id']): Promise < Condition[] > {

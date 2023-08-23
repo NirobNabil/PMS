@@ -8,4 +8,5 @@ export interface Prescription {
     medicines: Medicine[];
     note: string;
     conditions: Condition[];
+    created_at: Date
 }

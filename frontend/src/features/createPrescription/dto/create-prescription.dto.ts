@@ -1,8 +1,8 @@
 import { Medicine } from "../interfaces/medicine.interface"
-import { Patient } from "../../patient/interfaces/patient.interface"
+import { Patient } from "@/features/prescriptions/interfaces/patient.interface"
 import { Condition } from "../interfaces/condition.interface";
 
-export class CreatePrescriptionDto {
+export interface CreatePrescriptionDto {
     patient: Patient;
     medicines: Medicine[];
     note: string;

@@ -10,6 +10,8 @@ import { Separator } from "@radix-ui/react-separator"
 import { MedicineFilter } from "./components/medicines.filter"
 import { Input } from "@/components/ui/input"
 import { InputFilter } from "./components/input.filter"
+import { DateRangeFilter } from "./components/date.filter"
+import { format } from 'date-fns';
 
 
 // This type is used to define the shape of our data.
@@ -99,5 +101,24 @@ export const columns: ColumnDef<PrescriptionSummary>[] = [
                 </div>
             )
         },
+    }, 
+    {
+        accessorKey: "created_at",
+        header: () => {
+            return (
+                <div className="flex flex-col gap-y-2 py-4 r" >
+                    <span>Created at</span>
+                    <Separator orientation="horizontal" className="w-16 h-[1px] bg-slate-400" />
+                    <DateRangeFilter name="created_at" />
+                </div>
+            )
+        },
+        cell: ({row}) => {
+            return (
+                <div className="flex flex-col r" >
+                    {format(row.getValue("created_at"), "LLL dd, y")}
+                </div>
+            )
+        }
     },
 ]
