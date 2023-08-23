@@ -3,13 +3,15 @@ import { CreatePrescriptionDto } from './prescription.dto';
 import { api } from './index'
 import { Prescription } from '@/features/prescription/interfaces/prescription.interface';
 import { Condition } from '@/features/prescription/interfaces/condition.interface';
+import { createConditionDto } from '@/features/createPrescription/dto/create-condition.dto';
+import { Filter } from '@/features/prescriptions/interfaces/filter.interface';
 
 export const createPrescription = async (data : CreatePrescriptionDto) : Promise<Prescription> => {
     return ( await api.post('/prescription', data) ).data;
 }
 
-export const fetchPrescriptions = async () : Promise<Prescription[]> => {
-    return ( await api.get('/prescription') ).data;
+export const fetchPrescriptions = async (filter : Filter ) : Promise<Prescription[]> => {
+    return ( await api.get('/prescription', { params: filter } ) ).data;
 }
 
 export const fetchAllMedicines = async () : Promise<Medicine[]> => {
@@ -20,4 +22,8 @@ export const fetchAllMedicines = async () : Promise<Medicine[]> => {
 export const fetchAllConditions = async () : Promise<Condition[]> => {
     const data = ( await api.get('prescription/condition') ).data;
     return data;
+}
+
+export const createCondition = async ( data : createConditionDto ) : Promise<Condition> => {
+    return ( await api.post('prescription/condition', data) ).data;
 }

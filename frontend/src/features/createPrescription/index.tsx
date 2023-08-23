@@ -93,9 +93,9 @@ export const CreatePrescriptionPage = () => {
             }
         }, [fetchAllMedicinesQuery.data]);
 
-    useEffect( 
+    useEffect(
         () => {
-            if( fetchAllConditionsQuery.status == 'success' ) {
+            if (fetchAllConditionsQuery.status == 'success') {
                 set_recent_conditions(fetchAllConditionsQuery.data);
             }
         }, [fetchAllConditionsQuery.data]
@@ -113,7 +113,7 @@ export const CreatePrescriptionPage = () => {
     }
     const addNewConditionToRecentConditions = (condition: Condition) => {
         const new_conditions = recent_conditions;
-        if (new_conditions.findIndex(v => v.id === condition.id) == -1) {
+        if (new_conditions.findIndex(v => v.id === condition.id && v.name == condition.name) == -1) {
             set_recent_conditions([...recent_conditions, condition]);
         }
         onConditionToggle(condition, true);
@@ -254,16 +254,21 @@ export const CreatePrescriptionPage = () => {
                                                 {cond.name}
                                             </Toggle>
                                         ))}
-                                        <Command value={condition_search_text} onValueChange={set_condition_search_text} className="rounded-lg mt-2 border shadow-md">
-                                            <CommandInput placeholder="Type a condition or search..." />
+                                        <Command className="rounded-lg mt-2 border shadow-md">
+                                            <CommandInput value={condition_search_text} onValueChange={v => set_condition_search_text(v)} placeholder="Type a condition or search..." />
                                             <CommandList>
-                                                <CommandEmpty>
-                                                    <CommandItem key={"new condition"} className="border mr-4 my-2 font-normal" >
-                                                        <span onClick={() => addNewConditionToRecentConditions({
+                                                <CommandEmpty className='flex flex-row items-center justify-center py-8' >
+                                                    Create new condition
+                                                    <Button 
+                                                        className='ml-4'
+                                                        variant={"outline"}
+                                                        onClick={() => addNewConditionToRecentConditions({
                                                             id: "",
                                                             name: condition_search_text
-                                                        })} >{condition_search_text}</span>
-                                                    </CommandItem>
+                                                        })} 
+                                                    >
+                                                        {condition_search_text}
+                                                    </Button>
                                                 </CommandEmpty>
                                                 <CommandGroup heading="Suggestions">
                                                     {recent_conditions.map((cond) => (

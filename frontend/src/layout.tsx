@@ -13,7 +13,7 @@ export default () => {
                 <Navbar />
                 <Routes>
                     <Route path="/create_prescription" element={<CreatePrescriptionPage />} />
-                    <Route path="/prsecriptions" element={<PrescriptionsPage />} />
+                    <Route path="/prescriptions" element={<PrescriptionsPage />} />
                 </Routes>
             </div>
         </BrowserRouter>

@@ -24,28 +24,6 @@ export class PrescriptionService {
 
         let patient_rows = (await db.query(`select id from patient where phone = $1`, [prescription.patient.phone])).rows;
 
-        if (patient_rows.length == 0) {
-            patient_id = await this.patientService.create(patient);
-        } else {
-            patient_id = patient_rows[0].id;
-        }
-
-        let final_medicines = await Promise.all(medicines.map(async med => {
-            if (med.id == null) {
-                return await this.createMedicine(med);
-            } else {
-                return await this.findMedicine(med.id);
-            }
-        }));
-
-        let final_conditions = await Promise.all( conditions.map( async condition => {
-            if( condition.id == null ) {
-                return await this.createCondition(condition);
-            } else {
-                return await this.findCondition(condition.id);
-            }
-        } ) ) 
-
         const prescription_id = uuidv4();
 
         // initiating a transaction
@@ -55,9 +33,32 @@ export class PrescriptionService {
 
             await db.query('SET CONSTRAINTS ALL DEFERRED');
 
+            if (patient_rows.length == 0) {
+                patient_id = await this.patientService.create(patient);
+            } else {
+                patient_id = patient_rows[0].id;
+            }
+    
+            let final_medicines = await Promise.all(medicines.map(async med => {
+                if (med.id == null) {
+                    return await this.createMedicine(med);
+                } else {
+                    return await this.findMedicine(med.id);
+                }
+            }));
+    
+            let final_conditions = await Promise.all( conditions.map( async condition => {
+                if( condition.id == null ) {
+                    const data = await this.createCondition(condition);
+                    return data;
+                } else {
+                    return await this.findCondition(condition.id);
+                }
+            } ) ) 
+
             await db.query(`insert into prescription (id, patient_id, note) values ($1, $2, $3)`, [prescription_id, patient_id, note])
 
-            console.log(final_medicines, prescription_id);
+            // console.log(final_medicines, final_conditions, prescription_id);
 
             await Promise.all(final_conditions.map( async (cond : Condition) => {
                 await db.query(`insert into prescribed_conditions values ($1, $2)`, [prescription_id, cond.id])
@@ -90,7 +91,11 @@ export class PrescriptionService {
         return {id: p.id, patient, medicines, conditions, note: p.note}
     }
 
-    async findAll(): Promise < Prescription[] > {
+    // TODO:
+    // Ei function e apatoto shob prescription return kortese
+    // filter parameter ta parse kore tomar oi onujayi filter kore output deya lagbe shimlachan
+    async findAll(filter): Promise < Prescription[] > {
+        console.log(filter);
         const rows = (await db.query(`select * from prescription`)).rows;
         const prescriptions = await Promise.all( rows.map(async (p) : Promise < Prescription > => {
             const medicines = await this.getPrescribedMedicines(p.id);
@@ -100,6 +105,7 @@ export class PrescriptionService {
         }));
         return prescriptions;
     }
+    
 
     async getPrescribedMedicines(prescription_id : Prescription['id']): Promise < Medicine[] > {
         const medicines = (await db.query(

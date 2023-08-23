@@ -1,52 +1,103 @@
 "use client"
- 
+
 import { ColumnDef } from "@tanstack/react-table"
 import { Condition } from "@/features/createPrescription/interfaces/condition.interface"
 import { Medicine } from "@/features/createPrescription/interfaces/medicine.interface"
 import { PrescriptionSummary } from "./interfaces/prescriptionSummary.interface"
 import { Badge } from "@/components/ui/badge"
+import { ConditionFilter } from "./components/conditions.filter"
+import { Separator } from "@radix-ui/react-separator"
+import { MedicineFilter } from "./components/medicines.filter"
+import { Input } from "@/components/ui/input"
+import { InputFilter } from "./components/input.filter"
 
- 
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
- 
+
 export const columns: ColumnDef<PrescriptionSummary>[] = [
-  {
-    accessorKey: "name",
-    header: "রোগীর নাম",
-  },
-  {
-    accessorKey: "phone",
-    header: "ফোন",
-  },
-  {
-    accessorKey: "conditions",
-    header: "রোগ / সমস্যা",
-    cell: ({ row }) => {
-        const conditions = row.getValue("conditions") as Condition[];
-
-        return (
-            <>
-                {conditions.map( c => (
-                    <Badge key={c.name} className="font-normal" >{c.name}</Badge>
-                ) )}
-            </>
-        )
+    {
+        accessorKey: "name",
+        header: () => {
+            return (
+                <div className="flex flex-col gap-y-2 py-4 r" >
+                    <span>রোগীর নাম</span>
+                    <Separator orientation="horizontal" className="w-28 h-[1px] bg-slate-400" />
+                    <InputFilter name="name" className="h-auto py-1 w-40" />
+                </div>
+            )
+        },
+        cell: ({row}) => {
+            return (
+                <div className="flex flex-col r" >
+                    {row.getValue("name")}
+                </div>
+            )
+        }
     },
-  },
-  {
-    accessorKey: "medicines",
-    header: "ঔষধ / ড্রপ",
-    cell: ({ row }) => {
-      const conditions = row.getValue("medicines") as Medicine[];
+    {
+        accessorKey: "phone",
+        header: () => {
+            return (
+                <div className="flex flex-col gap-y-2 py-4 r" >
+                    <span>ফোন</span>
+                    <Separator orientation="horizontal" className="w-16 h-[1px] bg-slate-400" />
+                    <InputFilter name="phone" className="h-auto py-1 w-40" />
+                </div>
+            )
+        },
+        cell: ({row}) => {
+            return (
+                <div className="flex flex-col r" >
+                    {row.getValue("phone")}
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: "conditions",
+        header: ({ table }) => {
+            return (
+                <div className="flex flex-col gap-y-2 py-4 r w-56" >
+                    <span>রোগ / সমস্যা</span>
+                    <Separator orientation="horizontal" className="w-28 h-[1px] bg-slate-400" />
+                    <ConditionFilter  />
+                </div>
+            )
+        },
+        cell: ({ row }) => {
+            const conditions = row.getValue("conditions") as Condition[];
 
-      return (
-          <>
-              {conditions.map( c => (
-                  <Badge key={c.name} className="font-normal" variant={"outline"} >{c.name}</Badge>
-              ) )}
-          </>
-      )
-  },
-  },
+            return (
+                <div className="flex flex-row flex-wrap gap-y-2 gap-x-2 r">
+                    {conditions.map(c => (
+                        <Badge variant={'secondary'} key={c.name} className="font-normal" >{c.name}</Badge>
+                    ))}
+                </div>
+            )
+        },
+    },
+    {
+        accessorKey: "medicines",
+        header: ({ table }) => {
+            return (
+                <div className="flex flex-col gap-y-2 py-4 r w-64" >
+                    <span>ঔষধ / ড্রপ</span>
+                    <Separator orientation="horizontal" className="w-28 h-[1px] bg-slate-400" />
+                    <MedicineFilter />
+                </div>
+            )
+        },
+        cell: ({ row }) => {
+            const conditions = row.getValue("medicines") as Medicine[];
+
+            return (
+                <div className=" flex flex-row">
+                    {conditions.map(c => (
+                        <Badge key={c.name} className="font-normal" variant={"outline"} >{c.name}</Badge>
+                    ))}
+                </div>
+            )
+        },
+    },
 ]

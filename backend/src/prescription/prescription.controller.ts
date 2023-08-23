@@ -1,11 +1,12 @@
 
-import { Controller, Get, Post, Body, Param, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { CreatePrescriptionDto } from './dto/create-prescription.dto';
 import { PrescriptionService } from './prescription.service';
 import { Prescription } from './interfaces/prescription.interface';
 import { Medicine } from './interfaces/medicine.interface';
 import { CreateMedicineDto } from './dto/create-medicine.dto';
 import { Condition } from './interfaces/condition.interface';
+import { createConditionDto } from './dto/create-condition.dto';
 
 @Controller('prescription')
 export class PrescriptionController {
@@ -14,7 +15,7 @@ export class PrescriptionController {
   @Post()
   async create(@Body() createPrescriptionDto: CreatePrescriptionDto) {
     const conditions = createPrescriptionDto.conditions.map( cond => {
-      if( cond.id == "" ) cond.id == null;  // TODO: there should be a better way for checking existence of condition 
+      if( cond.id == '' ) cond.id = null;  // TODO: there should be a better way for checking existence of condition 
       return cond;
     } )
     const id = await this.prescriptionService.create({...createPrescriptionDto, conditions: conditions});
@@ -25,8 +26,8 @@ export class PrescriptionController {
   }
 
   @Get()
-  async findAll() : Promise<Prescription[]> {
-    return this.prescriptionService.findAll();
+  async findAll(@Query() filter) : Promise<Prescription[]> {
+    return this.prescriptionService.findAll(filter);
   }
 
   @Post('medicine')
@@ -46,8 +47,14 @@ export class PrescriptionController {
   }
 
   @Get('condition')
-  async findAllConditions() : Promise<Condition[]> {
+  async findAllConditions(@Param() params) : Promise<Condition[]> {
+    console.log(params);
     return this.prescriptionService.findAllCondition();
+  }
+
+  @Post('condition')
+  async createCondition(@Body() data : createConditionDto )  : Promise<Condition> {
+    return this.prescriptionService.createCondition({...data, id:null});
   }
 
   @Get(':id')

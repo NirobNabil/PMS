@@ -31,9 +31,4 @@ export class PatientController {
   }
 
 
-
-  // @Get()
-  // async findAll(): Promise<Prescription[]> {
-  //   return this.catsService.findAll();
-  // }
 }
