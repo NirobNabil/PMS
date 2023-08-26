@@ -163,6 +163,7 @@ export class PrescriptionService {
     async createCondition(condition : Condition) : Promise<Condition> {
         let id = uuidv4();
         if( condition.id != null ) id = condition.id;
+        console.log(id);
         await db.query(`insert into condition values ($1, $2)`, [id, condition.name]);
         return { ...condition, id: id };
     }

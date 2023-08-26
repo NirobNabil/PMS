@@ -122,6 +122,8 @@ export const CreatePrescriptionPage = () => {
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
 
+
+
         let patient;
 
         const existingPatientQuery = await findPatientByPhone(data.phone);
@@ -134,6 +136,7 @@ export const CreatePrescriptionPage = () => {
             }));
         } else {
             patient = existingPatientQuery;
+            //TODO: Show a confirmation modal that a user with this phone number already exists and if he/she wants to proceed with it
         }
 
         await createPrescription({
@@ -260,6 +263,8 @@ export const CreatePrescriptionPage = () => {
                                                 <CommandEmpty className='flex flex-row items-center justify-center py-8' >
                                                     Create new condition
                                                     <Button 
+                                                        //type = button is mandatory because it prevents the whole form submitting on this click
+                                                        type='button' 
                                                         className='ml-4'
                                                         variant={"outline"}
                                                         onClick={() => addNewConditionToRecentConditions({
@@ -273,7 +278,7 @@ export const CreatePrescriptionPage = () => {
                                                 <CommandGroup heading="Suggestions">
                                                     {recent_conditions.map((cond) => (
                                                         <CommandItem key={cond.id} className="border mr-4 my-2 font-normal" >
-                                                            <span onClick={() => addNewConditionToRecentConditions(cond)} >{cond.name}</span>
+                                                            <button type='button' onClick={() => addNewConditionToRecentConditions(cond)} >{cond.name}</button>
                                                         </CommandItem>
                                                     ))}
                                                 </CommandGroup>

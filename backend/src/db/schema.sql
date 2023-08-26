@@ -22,6 +22,7 @@ CREATE TABLE prescription (
     id CHAR(36),
     patient_id CHAR(36),
     note TEXT,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP
     PRIMARY KEY (id),
     FOREIGN KEY (patient_id) REFERENCES patient(id)
 );

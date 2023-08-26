@@ -8,6 +8,7 @@ import { PrescriptionsPage } from './features/prescriptions';
 import { MedicinesPage } from './features/medicines';
 import { Toaster } from './components/ui/toaster';
 import { ThemeProvider } from './components/theme-provider';
+import { AppointmentPage } from './features/appointment';
 
 export default () => {
     return (    
@@ -19,6 +20,7 @@ export default () => {
                     <Route path="/create_prescription" element={<CreatePrescriptionPage />} />
                     <Route path="/prescriptions" element={<PrescriptionsPage />} />
                     <Route path="/medicines" element={<MedicinesPage />} />
+                    <Route path="/appointment" element={<AppointmentPage />} />
                 </Routes>
                 <Toaster />
             </div>
