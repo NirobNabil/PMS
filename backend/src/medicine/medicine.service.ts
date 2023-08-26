@@ -16,6 +16,7 @@ export class MedicineService {
         let id = uuidv4();
         console.log(medicine);
         if( medicine.id != null ) id = medicine.id;
+        console.log(medicine);
         await db.query(`insert into medicine values ($1, $2, $3, $4)`, [id, medicine.name, medicine.generic_name, medicine.producer]);
         return {...medicine, id: id};
     }

@@ -36,12 +36,17 @@ export function CreateMedicine() {
 
     const onSubmit = async (data : z.infer<typeof FormSchema>) => {
         console.log(data);
-        // try{
-        //     const ret = await createMedicine(data);
-        toast({
-            title: "Medicine Created",
-            description: `${data.name} : ${data.generic_name} : ${data.producer}` 
-        })
+        try{
+            const ret = await createMedicine(data);
+            toast({
+                title: "Medicine Created",
+                description: `${data.name} : ${data.generic_name} : ${data.producer}` 
+            })
+        } catch(e) {
+            toast({
+                title: "Couldn't creat medicine",
+            })
+        }
     }
 
     return (
