@@ -26,6 +26,14 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
+
 
 // custom component imports
 import { InputField } from './components/InputField'
@@ -33,8 +41,9 @@ import { Medicine } from './interfaces/medicine.interface'
 import { Condition } from './interfaces/condition.interface'
 import { createPrescription, fetchAllMedicines, fetchAllConditions } from '@/api/prescription'
 import { createPatient, findPatientByPhone } from '@/api/patient'
-
-
+import { fetchAllAppointments } from '@/api/appointment'
+import { Appointment } from '../appointment/interfaces/appointment.interface'
+import { CreatePrescriptionForm } from './components/createForm'
 
 
 const FormSchema = z.object({
@@ -52,77 +61,15 @@ const FormSchema = z.object({
         id: z.string(),
         name: z.string(),
     }).array().optional(),
-    note: z.string()
+    note: z.string(),
+    appointment_id: z.string(),
 })
 
 export const CreatePrescriptionPage = () => {
 
     const { toast } = useToast();
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
-        defaultValues: {
-            name: "",
-            phone: "",
-            issue: "",
-            age: "",
-            medicines: [],
-            note: "",
-            conditions: []
-        }
-    })
-
-
-    const [condition_search_text, set_condition_search_text] = useState("");
-
-
-    // this list contains the list of medicine/condition names that can be selected using the toggle buttons
-    // and are displayed at the top of the medicines/condtion section
-    const [recent_medicines, set_recent_medicines] = useState([] as Array<Medicine>);
-    const [recent_conditions, set_recent_conditions] = useState([] as Array<Condition>);
-
-
-    // fetches all medicines/conditions to be displayed in the searchbar
-    const fetchAllMedicinesQuery = useQuery('getAllMedicines', fetchAllMedicines)
-    const fetchAllConditionsQuery = useQuery('getAllConditions', fetchAllConditions)
-
-    useEffect(
-        () => {
-            if (fetchAllMedicinesQuery.status == 'success') {
-                set_recent_medicines(fetchAllMedicinesQuery.data);
-            }
-        }, [fetchAllMedicinesQuery.data]);
-
-    useEffect(
-        () => {
-            if (fetchAllConditionsQuery.status == 'success') {
-                set_recent_conditions(fetchAllConditionsQuery.data);
-            }
-        }, [fetchAllConditionsQuery.data]
-    )
-
-
-    // this function is called when user searches for medicines and clicks on one. This function 
-    // then adds the selected medicine to the toggle buttons list which is actually the recent_medicines list
-    const addNewMedicineToRecentMedicines = (medicine: Medicine) => {
-        const new_medicines = recent_medicines;
-        if (new_medicines.findIndex(v => v.id === medicine.id) == -1) {
-            set_recent_medicines([...recent_medicines, medicine]);
-        }
-        onMedicineToggle(medicine, true);
-    }
-    const addNewConditionToRecentConditions = (condition: Condition) => {
-        const new_conditions = recent_conditions;
-        if (new_conditions.findIndex(v => v.id === condition.id && v.name == condition.name) == -1) {
-            set_recent_conditions([...recent_conditions, condition]);
-        }
-        onConditionToggle(condition, true);
-    }
-
-
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-
-
 
         let patient;
 
@@ -144,6 +91,7 @@ export const CreatePrescriptionPage = () => {
             medicines: data.medicines as Medicine[],
             note: data.note,
             conditions: data.conditions as Condition[],
+            appointment_id: data.appointment_id
         })
 
         toast({
@@ -154,149 +102,20 @@ export const CreatePrescriptionPage = () => {
     }
 
 
-    const onMedicineToggle = (med: Medicine, pressed: boolean) => {
-
-        const current_medicines = form.getValues('medicines') as Medicine[];
-
-        if (pressed) {
-            form.setValue('medicines', [...current_medicines, med]);
-        } else {
-            form.setValue('medicines', current_medicines?.filter(cur => cur.id != med.id));
-        }
-
-        // this triggers the validation process of the form and also registers the change of value inside the form
-        form.trigger('medicines').then(() => console.log("medicine", form.getValues(), form.formState));
-
-    }
-    const onConditionToggle = (cond: Condition, pressed: boolean) => {
-
-        const current_conditions = form.getValues('conditions') as Medicine[];
-
-        if (pressed) {
-            form.setValue('conditions', [...current_conditions, cond]);
-        } else {
-            form.setValue('conditions', current_conditions?.filter(cur => cur.id != cond.id));
-        }
-
-        // this triggers the validation process of the form and also registers the change of value inside the form
-        form.trigger('conditions').then(() => console.log("medicine", form.getValues(), form.formState));
-
-    }
-
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-6">
-
-                <InputField form={form} name="name" label="নাম" placeholder="বামন গিন্নি" itemClassName="align-left" />
-
-                <div className="flex" >
-                    <InputField form={form} name="age" label="বয়স" placeholder="২২" itemClassName="w-1/2 mr-4" labelClassName="align-left" />
-                    <InputField form={form} name="phone" label="ফোন" placeholder="০১৮৪৮৩৩৩৩৮৫" itemClassName="w-1/2" labelClassName="align-left" />
-                </div>
-
-                {/* <InputField form={form} name="issue" label="সমস্যা" placeholder="আমি তোমারে চোখে দেখি না" labelClassName="align-left" textarea /> */}
-
-                <FormField
-                    control={form.control}
-                    name="medicines"
-                    render={({ field }) => {
-                        return (
-                            <FormItem>
-                                <FormLabel className="align-left" >ঔষধ / ড্রপ</FormLabel>
-                                <FormControl>
-                                    <div>
-                                        {recent_medicines.map((med) => (
-                                            <Toggle
-                                                pressed={field.value && field.value.findIndex(v => v.id == med.id) != -1}
-                                                key={med.id}
-                                                onPressedChange={pressed => onMedicineToggle(med, pressed)}
-                                                className="border mr-4 my-2 font-normal"
-                                            >
-                                                {med.name}
-                                            </Toggle>
-                                        ))}
-                                        <Command className="rounded-lg mt-2 border shadow-md">
-                                            <CommandInput placeholder="Type a command or search..." />
-                                            <CommandList>
-                                                <CommandEmpty>
-                                                    No medicine found
-                                                </CommandEmpty>
-                                                <CommandGroup heading="Suggestions">
-                                                    {recent_medicines.map((med) => (
-                                                        <CommandItem key={med.id} className="border mr-4 my-2 font-normal" >
-                                                            <span onClick={() => addNewMedicineToRecentMedicines(med)} >{med.name}</span>
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )
-                    }}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="conditions"
-                    render={({ field }) => {
-                        return (
-                            <FormItem>
-                                <FormLabel className="align-left" >রোগ / সমস্যা</FormLabel>
-                                <FormControl>
-                                    <div>
-                                        {recent_conditions.map((cond) => (
-                                            <Toggle
-                                                pressed={field.value && field.value.findIndex(v => v.id == cond.id) != -1}
-                                                key={cond.id}
-                                                onPressedChange={pressed => onConditionToggle(cond, pressed)}
-                                                className="border mr-4 my-2 font-normal"
-                                            >
-                                                {cond.name}
-                                            </Toggle>
-                                        ))}
-                                        <Command className="rounded-lg mt-2 border shadow-md">
-                                            <CommandInput value={condition_search_text} onValueChange={v => set_condition_search_text(v)} placeholder="Type a condition or search..." />
-                                            <CommandList>
-                                                <CommandEmpty className='flex flex-row items-center justify-center py-8' >
-                                                    Create new condition
-                                                    <Button 
-                                                        //type = button is mandatory because it prevents the whole form submitting on this click
-                                                        type='button' 
-                                                        className='ml-4'
-                                                        variant={"outline"}
-                                                        onClick={() => addNewConditionToRecentConditions({
-                                                            id: "",
-                                                            name: condition_search_text
-                                                        })} 
-                                                    >
-                                                        {condition_search_text}
-                                                    </Button>
-                                                </CommandEmpty>
-                                                <CommandGroup heading="Suggestions">
-                                                    {recent_conditions.map((cond) => (
-                                                        <CommandItem key={cond.id} className="border mr-4 my-2 font-normal" >
-                                                            <button type='button' onClick={() => addNewConditionToRecentConditions(cond)} >{cond.name}</button>
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )
-                    }}
-                />
-
-                <InputField form={form} name="note" label="নোট" placeholder="দেইখাও তো দেখবা না" labelClassName="align-left" textarea />
-
-                <Button type="submit" >Submit</Button>
-            </form>
-        </Form>
+        <CreatePrescriptionForm 
+            initialValues={{
+                name: "",
+                phone: "",
+                issue: "",
+                age: "",
+                medicines: [],
+                note: "",
+                conditions: [],
+                appointment_id: ""
+            }}
+            onSubmit={onSubmit} 
+        />
     )
 }
 

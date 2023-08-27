@@ -3,6 +3,7 @@ import { Condition } from '@/features/prescription/interfaces/condition.interfac
 import { Medicine } from '@/features/prescription/interfaces/medicine.interface';
 
 export interface CreatePrescriptionDto {
+    appointment_id: string,
     patient: Patient;
     medicines: Medicine[];
     note: string;

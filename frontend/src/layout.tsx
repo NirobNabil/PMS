@@ -18,7 +18,8 @@ export default () => {
                 <Navbar />
                 <Routes>
                     <Route path="/create_prescription" element={<CreatePrescriptionPage />} />
-                    <Route path="/prescriptions" element={<PrescriptionsPage />} />
+                    <Route path="/prescription" element={<PrescriptionsPage />} />
+                    <Route path="/prescription/:id" element={<PrescriptionsPage />} />
                     <Route path="/medicines" element={<MedicinesPage />} />
                     <Route path="/appointment" element={<AppointmentPage />} />
                 </Routes>

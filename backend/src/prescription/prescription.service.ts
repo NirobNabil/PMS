@@ -18,7 +18,7 @@ export class PrescriptionService {
 
     async create(prescription : CreatePrescriptionDto) : Promise<string> {
 
-        const {patient, medicines, note, conditions} = prescription;
+        const {patient, medicines, note, conditions, appointment_id} = prescription;
 
         let patient_id;
 
@@ -56,9 +56,7 @@ export class PrescriptionService {
                 }
             } ) ) 
 
-            await db.query(`insert into prescription (id, patient_id, note) values ($1, $2, $3)`, [prescription_id, patient_id, note])
-
-            // console.log(final_medicines, final_conditions, prescription_id);
+            await db.query(`insert into prescription (id, patient_id, note) values ($1, $2, $3)`, [prescription_id, patient_id, note]);
 
             await Promise.all(final_conditions.map( async (cond : Condition) => {
                 await db.query(`insert into prescribed_conditions values ($1, $2)`, [prescription_id, cond.id])
@@ -67,6 +65,11 @@ export class PrescriptionService {
             await Promise.all(final_medicines.map(async (med : Medicine) => {
                 await db.query(`insert into prescribed_medicines values ($1, $2)`, [prescription_id, med.id])
             }))
+
+            if( appointment_id != "" ) {
+                console.log(prescription_id, appointment_id);
+                await db.query( `update appointment set prescription_id = $1 where id = $2`, [ prescription_id, appointment_id ] );
+            }
 
             await db.query('COMMIT');
 

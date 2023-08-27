@@ -14,6 +14,10 @@ export const fetchPrescriptions = async (filter : Filter ) : Promise<Prescriptio
     return ( await api.get('/prescription', { params: filter } ) ).data;
 }
 
+export const fetchOnePrescription = async (id : string ) : Promise<Prescription> => {
+    return ( await api.get('/prescription/' + id ) ).data;
+}
+
 // TODO: this function should probably be moved to api/medicines
 export const fetchAllMedicines = async () : Promise<Medicine[]> => {
     const data = ( await api.get('prescription/medicine') ).data;

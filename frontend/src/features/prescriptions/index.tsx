@@ -5,6 +5,7 @@ import { useQuery } from "react-query"
 import { fetchPrescriptions } from "@/api/prescription"
 import { PrescriptionSummary } from "./interfaces/prescriptionSummary.interface"
 import { Filter } from "./interfaces/filter.interface"
+import { PrescriptionModal } from "./components/prescription.modal"
 
 
 //TODO: keeping the filter empty initially. is it a good idea? 
@@ -49,6 +50,7 @@ export const PrescriptionsPage = () => {
     return (
         // @ts-ignore
         <filterContext.Provider value={{filter, set_filter: set_filter}} >
+            <PrescriptionModal />
             <div className="mx-auto py-10">
                 <DataTable columns={columns} data={data} />
             </div>

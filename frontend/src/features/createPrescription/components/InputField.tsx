@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 
 export const InputField = (props : any) => {
-    const { form, name, label, placeholder, itemClassName, labelClassName, textarea } = props;
+    const { form, name, label, placeholder, itemClassName, labelClassName, textarea, viewOnly } = props;
     return (
         <FormField
             control={form.control}
@@ -20,9 +20,9 @@ export const InputField = (props : any) => {
                     <FormControl>
                         { 
                             textarea ?
-                                <Textarea placeholder={placeholder} {...field} />
+                                <Textarea  disabled={viewOnly ? true : false} placeholder={placeholder} {...field} />
                             :
-                                <Input placeholder={placeholder} {...field} />
+                                <Input disabled={viewOnly ? true : false} placeholder={placeholder} {...field} />
                         }
                     </FormControl>
                     <FormMessage />

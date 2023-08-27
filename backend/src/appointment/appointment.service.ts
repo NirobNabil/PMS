@@ -32,13 +32,16 @@ export class AppointmentService {
     }
 
     async findAll() {
-        const appointmentRows = (await db.query(`select * from appointment as t1 join patient as t2 on t1.patient_id = t2.id`)).rows;
+        const appointmentRows = (await db.query(`select * from appointment as t1 
+                                                 join (select id as patient_id, name, phone from patient ) as t2 
+                                                 on t1.patient_id = t2.patient_id`)).rows;
 
         const appointments = appointmentRows.map( app => ({
             id: app.id,
             patient: { name: app.name, phone: app.phone, id: app.patient_id },
             note: app.note,
             datetime: app.datetime,
+            prescription_id: app.prescription_id,
         }) )
 
 

@@ -2,9 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Medicine } from "@/features/createPrescription/interfaces/medicine.interface"
-import { Separator } from "@radix-ui/react-separator"
-import { InputFilter } from "./components/input.filter"
 import { format } from "date-fns"
+import { Link } from "react-router-dom"
+import { GanttChartSquare } from "lucide-react"
 
 
 // This type is used to define the shape of our data.
@@ -49,11 +49,16 @@ export const columns: ColumnDef<Medicine>[] = [
         accessorKey: "prescription_id",
         header: "Prescription",
         cell: ({row}) => {
-            console.log("row ", row.getValue("prescription_id"));
+            console.log("row ", );
             return (
-                <div className="flex flex-col r" >
-                    {row.getValue("prescription_id")}
+                !row.getValue("prescription_id") ? 
+                <div className="flex flex-col text-red-400" >
+                    No prescription yet
                 </div>
+                :
+                <Link to={`/prescription/${row.getValue("prescription_id")}`} className="flex gap-x-2 text-blue-500" >
+                    <GanttChartSquare height={20} width={20} /> Prescription
+                </Link>
             )
         }
     }

@@ -15,6 +15,7 @@ CREATE TABLE appointment (
     patient_id CHAR(36),
     note TEXT,
     datetime timestamp,
+    prescription_id CHAR(36),
     PRIMARY KEY (id),
     FOREIGN KEY (patient_id) REFERENCES patient(id)
 );

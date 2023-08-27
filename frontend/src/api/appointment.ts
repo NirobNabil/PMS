@@ -10,6 +10,6 @@ export const createAppointment = async (appointment : CreateAppointmentDto) : Pr
     return ( await api.post( 'appointment', appointment ) ).data;
 }
 
-export const fetchAppointments = async (filter : Filter) : Promise<Appointment[]> => {
-    return ( await api.get( 'appointment', { params: filter } ) ).data;
+export const fetchAllAppointments = async () : Promise<Appointment[]> => {
+    return ( await api.get( 'appointment' ) ).data;
 }

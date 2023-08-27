@@ -10,8 +10,8 @@ export class PatientService {
 
     async create(patient : Patient) : Promise<Patient> {
         const id = uuidv4();
-        await db.query(`insert into patient values ($1, $2, $3)`, [id, patient.name, patient.phone])
-        return { id, name:patient.name, phone: patient.phone };
+        await db.query(`insert into patient values ($1, $2, $3, $4)`, [id, patient.name, patient.phone, patient.age])
+        return { id, name:patient.name, phone: patient.phone, age: patient.age };
     }
 
     async findOne(id : Patient['id']): Promise < Patient > {

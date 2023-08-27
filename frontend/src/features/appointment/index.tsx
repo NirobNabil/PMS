@@ -4,7 +4,7 @@ import { DataTable } from "./components/DataTable"
 import { useQuery } from "react-query"
 import { Medicine } from "../createPrescription/interfaces/medicine.interface"
 import { CreateAppointment } from "./components/createAppointment"
-import { fetchAppointments } from "@/api/appointment"
+import { fetchAllAppointments } from "@/api/appointment"
 import { Appointment } from "./interfaces/appointment.interface"
 
 
@@ -19,15 +19,16 @@ export const AppointmentPage = () => {
 
     const getAppointmentsQuery = useQuery({
         queryKey: ['getAppointments', filter],
-        queryFn: () => fetchAppointments(filter),
+        queryFn: () => fetchAllAppointments(filter),
         select: (data) => {
             // modifies the server response to generate data format compatible to the DataTable
-            return data.map(({ id, patient, datetime }) => ({
+            return data.map(({ id, patient, datetime, prescription_id }) => ({
                 id,
                 patient_id: patient.id,
                 name: patient.name,
                 phone: patient.phone,
                 datetime: (new Date(datetime)),
+                prescription_id
             }));
         },
         onSuccess: (data) => set_data(data),
