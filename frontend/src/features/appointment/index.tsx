@@ -4,21 +4,36 @@ import { DataTable } from "./components/DataTable"
 import { useQuery } from "react-query"
 import { Medicine } from "../createPrescription/interfaces/medicine.interface"
 import { CreateAppointment } from "./components/createAppointment"
+import { fetchAppointments } from "@/api/appointment"
+import { Appointment } from "./interfaces/appointment.interface"
 
 
 //TODO: keeping the filter empty initially. is it a good idea? 
-export const filterContext = createContext({filter: {}});
+export const filterContext = createContext({ filter: {} });
 
 
 export const AppointmentPage = () => {
 
-    const [ data, set_data ] = useState<Medicine[]>([]);
+    const [data, set_data] = useState([]);
+    const [filter, set_filter] = useState({ name: "", generic_name: "", producer: "" });
 
-    // const getMedicinesQuery = useQuery({
-    //     queryKey: ['getMedicines', filter], 
-    //     queryFn: () => fetchMedicines( filter ),
-    //     onSuccess: (data) => set_data(data)
-    // });
+    const getAppointmentsQuery = useQuery({
+        queryKey: ['getAppointments', filter],
+        queryFn: () => fetchAppointments(filter),
+        select: (data) => {
+            // modifies the server response to generate data format compatible to the DataTable
+            return data.map(({ id, patient, datetime }) => ({
+                id,
+                patient_id: patient.id,
+                name: patient.name,
+                phone: patient.phone,
+                datetime: (new Date(datetime)),
+            }));
+        },
+        onSuccess: (data) => set_data(data),
+    });
+
+    console.log(data);
 
     // useEffect( 
     //     () => {
@@ -30,18 +45,18 @@ export const AppointmentPage = () => {
 
     // useEffect(
     //     () => {
-    //         if( getPrescriptionQuery.status == 'success' ) {
-    //             const data = getPrescriptionQuery.data as Prescription[];
-    //             const processed_data = data.map( ({id, patient, medicines, conditions}) => ({
+    //         if (getAppointmentsQuery.status == 'success') {
+    //             const data = getAppointmentsQuery.data as Appointment[];
+    //             const processed_data = data.map(({ id, patient, datetime }) => ({
     //                 id,
     //                 name: patient.name,
     //                 phone: patient.phone,
-    //                 medicines,
-    //                 conditions,
-    //             }) );
-    //             set_data( processed_data )
+    //                 datetime: new Date(datetime),
+    //             }));
+    //             console.log("gg", processed_data)
+    //             set_data(processed_data)
     //         }
-    //     }, [getPrescriptionQuery.isLoading]
+    //     }, [getAppointmentsQuery.isLoading]
     // )
 
     return (
@@ -49,9 +64,11 @@ export const AppointmentPage = () => {
         <filterContext.Provider >
             <div className="pt-16" >
                 <CreateAppointment />
-                {/* <div className="mx-auto py-10">
-                    <DataTable columns={columns} data={data} />
-                </div> */}
+                {data.length &&
+                    <div className="mx-auto py-10">
+                        <DataTable columns={columns} data={data} />
+                    </div>
+                }
             </div>
         </filterContext.Provider>
     )

@@ -10,6 +10,15 @@ CREATE TABLE patient (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE appointment (
+    id CHAR(36),
+    patient_id CHAR(36),
+    note TEXT,
+    datetime timestamp,
+    PRIMARY KEY (id),
+    FOREIGN KEY (patient_id) REFERENCES patient(id)
+);
+
 CREATE TABLE medicine (
     id CHAR(36),
     name varchar(255),
@@ -21,10 +30,11 @@ CREATE TABLE medicine (
 CREATE TABLE prescription (
     id CHAR(36),
     patient_id CHAR(36),
+    appointment_id CHAR(36),
     note TEXT,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
     PRIMARY KEY (id),
-    FOREIGN KEY (patient_id) REFERENCES patient(id)
+    FOREIGN KEY (patient_id) REFERENCES patient(id),
 );
 
 CREATE TABLE condition (

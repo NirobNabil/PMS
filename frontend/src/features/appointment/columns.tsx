@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Medicine } from "@/features/createPrescription/interfaces/medicine.interface"
 import { Separator } from "@radix-ui/react-separator"
 import { InputFilter } from "./components/input.filter"
+import { format } from "date-fns"
 
 
 // This type is used to define the shape of our data.
@@ -12,15 +13,7 @@ import { InputFilter } from "./components/input.filter"
 export const columns: ColumnDef<Medicine>[] = [
     {
         accessorKey: "name",
-        header: () => {
-            return (
-                <div className="flex flex-col gap-y-2 py-4 r" >
-                    <span>Name</span>
-                    <Separator orientation="horizontal" className="w-28 h-[1px] bg-slate-400" />
-                    <InputFilter name="name" className="h-auto py-1 w-40" />
-                </div>
-            )
-        },
+        header: "Patient name",
         cell: ({row}) => {
             return (
                 <div className="flex flex-col r" >
@@ -30,39 +23,36 @@ export const columns: ColumnDef<Medicine>[] = [
         }
     },
     {
-        accessorKey: "generic_name",
-        header: () => {
-            return (
-                <div className="flex flex-col gap-y-2 py-4 r" >
-                    <span>Generic Name</span>
-                    <Separator orientation="horizontal" className="w-16 h-[1px] bg-slate-400" />
-                    <InputFilter name="generic_name" className="h-auto py-1 w-40" />
-                </div>
-            )
-        },
+        accessorKey: "phone",
+        header: "Patient phone",
         cell: ({row}) => {
             return (
                 <div className="flex flex-col r" >
-                    {row.getValue("generic_name")}
+                    {row.getValue("phone")}
                 </div>
             )
         }
     },
     {
-        accessorKey: "producer",
-        header: () => {
-            return (
-                <div className="flex flex-col gap-y-2 py-4 r" >
-                    <span>Producer</span>
-                    <Separator orientation="horizontal" className="w-16 h-[1px] bg-slate-400" />
-                    <InputFilter name="producer" className="h-auto py-1 w-40" />
-                </div>
-            )
-        },
+        accessorKey: "datetime",
+        header: "Date & Time",
         cell: ({row}) => {
+            console.log("row ", row.getValue("datetime"));
             return (
                 <div className="flex flex-col r" >
-                    {row.getValue("producer")}
+                    {format( row.getValue("datetime"), "LLL dd, y : hh:mm aa")}
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: "prescription_id",
+        header: "Prescription",
+        cell: ({row}) => {
+            console.log("row ", row.getValue("prescription_id"));
+            return (
+                <div className="flex flex-col r" >
+                    {row.getValue("prescription_id")}
                 </div>
             )
         }
