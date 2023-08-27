@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 
 import {Patient} from './interfaces/patient.interface';
 
@@ -15,7 +15,11 @@ export class PatientService {
     }
 
     async findOne(id : Patient['id']): Promise < Patient > {
-        return (await db.query(`select * from patient where id = $1`, [id])).rows[0];
+        try {
+            return (await db.query(`select * from patient where id = $1`, [id])).rows[0];
+        } catch {
+            throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+        }
     }
 
     async findOneByPhone(phone : Patient['phone']): Promise < Patient > {

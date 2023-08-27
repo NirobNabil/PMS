@@ -220,11 +220,11 @@ export const CreatePrescriptionForm = ({ initialValues, onSubmit, viewOnly }) =>
                     </Popover>
                 }
 
-                <InputField viewOnly form={form} name="name" label="নাম" placeholder="বামন গিন্নি" itemClassName="align-left" />
+                <InputField viewOnly={viewOnly} form={form} name="name" label="নাম" placeholder="বামন গিন্নি" itemClassName="align-left" />
 
                 <div className="flex" >
-                    <InputField viewOnly form={form} name="age" label="বয়স" placeholder="২২" itemClassName="w-1/2 mr-4" labelClassName="align-left" />
-                    <InputField viewOnly form={form} name="phone" label="ফোন" placeholder="০১৮৪৮৩৩৩৩৮৫" itemClassName="w-1/2" labelClassName="align-left" />
+                    <InputField viewOnly={viewOnly} form={form} name="age" label="বয়স" placeholder="২২" itemClassName="w-1/2 mr-4" labelClassName="align-left" />
+                    <InputField viewOnly={viewOnly} form={form} name="phone" label="ফোন" placeholder="০১৮৪৮৩৩৩৩৮৫" itemClassName="w-1/2" labelClassName="align-left" />
                 </div>
 
                 {/* <InputField form={form} name="issue" label="সমস্যা" placeholder="আমি তোমারে চোখে দেখি না" labelClassName="align-left" textarea /> */}
@@ -249,6 +249,8 @@ export const CreatePrescriptionForm = ({ initialValues, onSubmit, viewOnly }) =>
                                                 {med.name}
                                             </Toggle>
                                         ))}
+                                        { 
+                                            !viewOnly ?
                                         <Command className="rounded-lg mt-2 border shadow-md">
                                             <CommandInput placeholder="Type a command or search..." />
                                             <CommandList>
@@ -256,14 +258,14 @@ export const CreatePrescriptionForm = ({ initialValues, onSubmit, viewOnly }) =>
                                                     No medicine found
                                                 </CommandEmpty>
                                                 <CommandGroup heading="Suggestions">
-                                                    {recent_medicines.map((med) => (
-                                                        <CommandItem key={med.id} className="border mr-4 my-2 font-normal" >
+                                                    {recent_medicines.map((med,i) => (
+                                                        <CommandItem key={i} className="border mr-4 my-2 font-normal" >
                                                             <span onClick={() => addNewMedicineToRecentMedicines(med)} >{med.name}</span>
                                                         </CommandItem>
                                                     ))}
                                                 </CommandGroup>
                                             </CommandList>
-                                        </Command>
+                                        </Command> : <></> }
                                     </div>
                                 </FormControl>
                                 <FormMessage />
@@ -292,6 +294,7 @@ export const CreatePrescriptionForm = ({ initialValues, onSubmit, viewOnly }) =>
                                                 {cond.name}
                                             </Toggle>
                                         ))}
+                                        { !viewOnly  ?                                 
                                         <Command className="rounded-lg mt-2 border shadow-md">
                                             <CommandInput value={condition_search_text} onValueChange={v => set_condition_search_text(v)} placeholder="Type a condition or search..." />
                                             <CommandList>
@@ -311,14 +314,16 @@ export const CreatePrescriptionForm = ({ initialValues, onSubmit, viewOnly }) =>
                                                     </Button>
                                                 </CommandEmpty>
                                                 <CommandGroup heading="Suggestions">
-                                                    {recent_conditions.map((cond) => (
-                                                        <CommandItem key={cond.id} className="border mr-4 my-2 font-normal" >
+                                                    {recent_conditions.map((cond, i) => (
+                                                        <CommandItem key={i} className="border mr-4 my-2 font-normal" >
                                                             <button type='button' onClick={() => addNewConditionToRecentConditions(cond)} >{cond.name}</button>
                                                         </CommandItem>
                                                     ))}
                                                 </CommandGroup>
                                             </CommandList>
                                         </Command>
+                                        : <></>
+                                                    }
                                     </div>
                                 </FormControl>
                                 <FormMessage />
@@ -327,7 +332,7 @@ export const CreatePrescriptionForm = ({ initialValues, onSubmit, viewOnly }) =>
                     }}
                 />
 
-                <InputField viewOnly form={form} name="note" label="নোট" placeholder="দেইখাও তো দেখবা না" labelClassName="align-left" textarea />
+                <InputField viewOnly={viewOnly} form={form} name="note" label="নোট" placeholder="note" labelClassName="align-left" textarea />
 
                 {!viewOnly &&
                     <Button type="submit" >Submit</Button>

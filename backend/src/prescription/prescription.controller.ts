@@ -59,7 +59,12 @@ export class PrescriptionController {
 
   @Get()
   async findAll(@Query() filter) : Promise<Prescription[]> {
-    return this.prescriptionService.findAll(filter);
+    const new_filter = {};
+    for( const key in filter ) {
+      // assuming filter only contains string type values
+      if( filter[key] != "" ) new_filter[key] = filter[key];
+    }
+    return this.prescriptionService.findAll(new_filter);
   }
 
   @Get(':id')

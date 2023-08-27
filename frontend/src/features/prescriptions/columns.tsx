@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input"
 import { InputFilter } from "./components/input.filter"
 import { DateRangeFilter } from "./components/date.filter"
 import { format } from 'date-fns';
+import { GanttChartSquare } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 
 // This type is used to define the shape of our data.
@@ -60,7 +62,7 @@ export const columns: ColumnDef<PrescriptionSummary>[] = [
         accessorKey: "conditions",
         header: ({ table }) => {
             return (
-                <div className="flex flex-col gap-y-2 py-4 r w-56" >
+                <div className="flex flex-col gap-y-2 py-4 w-48" >
                     <span>রোগ / সমস্যা</span>
                     <Separator orientation="horizontal" className="w-28 h-[1px] bg-slate-400" />
                     <ConditionFilter  />
@@ -83,7 +85,7 @@ export const columns: ColumnDef<PrescriptionSummary>[] = [
         accessorKey: "medicines",
         header: ({ table }) => {
             return (
-                <div className="flex flex-col gap-y-2 py-4 r w-64" >
+                <div className="flex flex-col gap-y-2 py-4 r w-56" >
                     <span>ঔষধ / ড্রপ</span>
                     <Separator orientation="horizontal" className="w-28 h-[1px] bg-slate-400" />
                     <MedicineFilter />
@@ -94,7 +96,7 @@ export const columns: ColumnDef<PrescriptionSummary>[] = [
             const conditions = row.getValue("medicines") as Medicine[];
 
             return (
-                <div className=" flex flex-row">
+                <div className=" flex flex-row gap-y-2 gap-x-2">
                     {conditions.map(c => (
                         <Badge key={c.name} className="font-normal" variant={"outline"} >{c.name}</Badge>
                     ))}
@@ -117,6 +119,20 @@ export const columns: ColumnDef<PrescriptionSummary>[] = [
             return (
                 <div className="flex flex-col r" >
                     {format(row.getValue("created_at"), "LLL dd, y")}
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: "id",
+        header: "",
+        cell: ({row}) => {
+            console.log("gg", row.getValue('id'));
+            return (
+                <div className="flex flex-col r" >
+                    <Link to={"/prescription/"+row.getValue('id')} >
+                        <GanttChartSquare />
+                    </Link>
                 </div>
             )
         }

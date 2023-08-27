@@ -48,7 +48,7 @@ export class PrescriptionService {
             }));
     
             let final_conditions = await Promise.all( conditions.map( async condition => {
-                if( condition.id == null ) {
+                if( condition.id == null || condition.id == "" ) {
                     const data = await this.createCondition(condition);
                     return data;
                 } else {
@@ -98,7 +98,62 @@ export class PrescriptionService {
     // Ei function e apatoto shob prescription return kortese
     // filter parameter ta parse kore tomar oi onujayi filter kore output deya lagbe shimlachan
     async findAll(filter): Promise < Prescription[] > {
-        const rows = (await db.query(`select * from prescription`)).rows;
+        console.log(filter);
+        const keys = Object.keys(filter);
+        let query = `( select prescription.id as id, prescription.patient_id as patient_id, prescription.note as note, created_at from prescription )`;
+        
+        let query_array = [query];
+
+        if( filter['conditions'] ) {
+            let q = ``;
+            q += `
+                ( select prescription.id as id, prescription.patient_id as patient_id, prescription.note as note, created_at
+                from prescription 
+                    join prescribed_conditions
+                        on prescription.id = prescribed_conditions.prescription_id and 
+                    (${ filter['conditions'].map( c => `prescribed_conditions.condition_id = '${c.id}'` ).join(' or ') })
+                    join condition
+                        on prescribed_conditions.condition_id = condition.id )
+            `;
+            query_array.push(q);
+        }
+
+        if( filter['medicines'] ) {
+            let q = '';
+            q += `
+                ( select prescription.id as id, prescription.patient_id as patient_id, prescription.note as note, created_at
+                from prescription 
+                    join prescribed_medicines
+                        on prescription.id = prescribed_medicines.medicine_id and
+                    (${ filter['medicines'].map( c => `prescribed_medicines.medicine_id = '${c.id}'` ).join(' or ') })
+                    join medicine
+                        on prescribed_medicines.medicine_id = medicine.id )`;
+            query_array.push(q);
+        }
+        console.log("filter ", filter);
+
+        if( filter['name'] ) {
+            query_array.push(
+                `( select prescription.id as id, prescription.patient_id as patient_id, prescription.note as note, created_at 
+                    from prescription 
+                    join patient on patient.name like '%${filter['name']}%' and patient.id = prescription.patient_id )`
+            )
+        }
+
+        if( filter['phone'] ) {
+            query_array.push(
+                `( select prescription.id as id, prescription.patient_id as patient_id, prescription.note as note, created_at 
+                    from prescription 
+                    join patient on patient.phone like '%${filter['phone']}%' and patient.id = prescription.patient_id )`
+            )
+        }
+
+        console.log(query_array.join(' INTERSECT '))
+        
+        query = query_array.join(' INTERSECT ')
+
+        console.log(keys);
+        const rows = (await db.query(query)).rows;
         const prescriptions = await Promise.all( rows.map(async (p) : Promise < Prescription > => {
             const medicines = await this.getPrescribedMedicines(p.id);
             const patient = await this.patientService.findOne(p.patient_id);

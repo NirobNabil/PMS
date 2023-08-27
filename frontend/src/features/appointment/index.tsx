@@ -65,10 +65,11 @@ export const AppointmentPage = () => {
         <filterContext.Provider >
             <div className="pt-16" >
                 <CreateAppointment />
-                {data.length &&
+                {data.length ?
                     <div className="mx-auto py-10">
                         <DataTable columns={columns} data={data} />
                     </div>
+                    : <></>
                 }
             </div>
         </filterContext.Provider>

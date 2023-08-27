@@ -104,6 +104,7 @@ export const CreatePrescriptionPage = () => {
 
     return (
         <CreatePrescriptionForm 
+            viewOnly={false}
             initialValues={{
                 name: "",
                 phone: "",

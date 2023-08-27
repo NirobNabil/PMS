@@ -58,8 +58,8 @@ export const MedicineFilter = () => {
             <PopoverTrigger asChild>
                 <Button variant="outline" className="text-sm py-1 h-auto">Filter medicines</Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80">
-                <Command className="rounded-lg mt-2 border shadow-md">
+            <PopoverContent className="w-80 z-40">
+                <Command className="rounded-lg mt-2 border shadow-md z-40">
                     <div className="rounded-lg p-2" >
                         { selected_medicines.map( cond => <Badge key={cond.id} className="m-1" variant={"outline"} > {cond.name} </Badge> ) }
                     </div>

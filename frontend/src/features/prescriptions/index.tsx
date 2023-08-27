@@ -38,6 +38,8 @@ export const PrescriptionsPage = () => {
         onSuccess: (data) => set_data(data)
     });
 
+    console.log(data);
+
     useEffect( 
         () => {
             console.log(filter)

@@ -49,6 +49,8 @@ export function PrescriptionModal({  }) {
 
     const params = useParams();
 
+    console.log(params.id);
+
     console.log(params);
 
     if( !params.id ) return <></>;
@@ -74,7 +76,7 @@ export function PrescriptionModal({  }) {
         <Dialog defaultOpen={true} >
             <DialogContent style={{maxHeight: '90vh', maxWidth: '80vw', overflow: 'hidden'}} >
                 <DialogHeader className='mb-2' >
-                    <DialogTitle>Edit Prescription</DialogTitle>
+                    <DialogTitle>Prescription Details</DialogTitle>
                 </DialogHeader>
                 
                 <ScrollArea style={{maxHeight: '80vh'}} >
